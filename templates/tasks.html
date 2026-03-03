@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body { font-family: Arial; max-width:700px; margin:auto; padding:20px; }
+
+        h2 { text-align:center; }
+
+        .stats { margin-bottom:15px; }
+
+        .task {
+            padding:10px;
+            margin-bottom:8px;
+            border-radius:8px;
+            background:#f4f4f4;
+        }
+
+        .done { text-decoration: line-through; color: gray; }
+
+        .overdue { background:#ffdddd; }
+
+        .high { border-left:6px solid red; }
+        .medium { border-left:6px solid orange; }
+        .low { border-left:6px solid green; }
+
+        a { margin-right:8px; text-decoration:none; }
+        button { padding:6px 10px; cursor:pointer; }
+
+        form { margin-bottom:15px; }
+        input, select { padding:6px; margin:3px; }
+    </style>
+</head>
+<body>
+
+<h2>Task Manager</h2>
+
+<div class="stats">
+    <strong>Completed:</strong> {{ completed }} |
+    <strong>Pending:</strong> {{ pending }}
+</div>
+
+<form method="GET">
+    <input type="text" name="search" placeholder="Search tasks..." value="{{ search }}">
+    <button type="submit">Search</button>
+</form>
+
+<form method="POST">
+    <input type="text" name="task" placeholder="New task" required>
+    <input type="date" name="due" required>
+
+    <select name="priority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+    </select>
+
+    <button type="submit">Add</button>
+</form>
+
+<hr>
+
+{% for task in tasks %}
+<div class="task 
+    {% if task.done %}done{% endif %}
+    {% if task.overdue %}overdue{% endif %}
+    {% if task.priority == 'High' %}high{% endif %}
+    {% if task.priority == 'Medium' %}medium{% endif %}
+    {% if task.priority == 'Low' %}low{% endif %}
+">
+
+    <strong>{{ task.text }}</strong><br>
+    Due: {{ task.due }} |
+    Priority: {{ task.priority }}
+
+    <br><br>
+
+    <a href="{{ url_for('toggle', task_id=task.id) }}">Toggle</a>
+    <a href="{{ url_for('edit', task_id=task.id) }}">Edit</a>
+    <a href="{{ url_for('delete', task_id=task.id) }}">Delete</a>
+
+</div>
+{% else %}
+<p>No tasks yet.</p>
+{% endfor %}
+
+<hr>
+<a href="{{ url_for('logout') }}">Logout</a>
+
+</body>
+</html>
